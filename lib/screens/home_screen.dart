@@ -175,35 +175,35 @@ class _HomeContent extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Achievements
-            const Text(
-              'Your Achievements',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            user.achievements.isEmpty
-                ? const Card(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  'Complete practice sessions to earn achievements!',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            )
-                : SizedBox(
-              height: 100,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: user.achievements.length,
-                itemBuilder: (context, index) {
-                  final achievement = user.achievements[index];
-                  return _AchievementItem(achievement: achievement);
-                },
-              ),
-            ),
+            // const Text(
+            //   'Your Achievements',
+            //   style: TextStyle(
+            //     fontSize: 18,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            // ),
+            // const SizedBox(height: 12),
+            // user.achievements.isEmpty
+            //     ? const Card(
+            //   child: Padding(
+            //     padding: EdgeInsets.all(16.0),
+            //     child: Text(
+            //       'Complete practice sessions to earn achievements!',
+            //       style: TextStyle(color: Colors.grey),
+            //     ),
+            //   ),
+            // )
+            //     : SizedBox(
+            //   height: 100,
+            //   child: ListView.builder(
+            //     scrollDirection: Axis.horizontal,
+            //     itemCount: user.achievements.length,
+            //     itemBuilder: (context, index) {
+            //       final achievement = user.achievements[index];
+            //       return _AchievementItem(achievement: achievement);
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

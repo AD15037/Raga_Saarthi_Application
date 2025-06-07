@@ -193,9 +193,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildMetricItem('Practice Sessions', metrics.sessionsCompleted, Icons.music_note),
-                _buildMetricItem('Current Streak', metrics.currentStreak, Icons.local_fire_department),
-                _buildMetricItem('Ragas Learned', metrics.ragasLearned, Icons.library_music),
+                Expanded(child: _buildMetricItem('Practice Sessions', metrics.sessionsCompleted, Icons.music_note)),
+                Expanded(child: _buildMetricItem('Current Streak', metrics.currentStreak, Icons.local_fire_department)),
+                Expanded(child: _buildMetricItem('Ragas Learned', metrics.ragasLearned, Icons.library_music)),
               ],
             ),
             const SizedBox(height: 16),

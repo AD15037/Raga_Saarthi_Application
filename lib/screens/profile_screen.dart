@@ -277,33 +277,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Your Achievements',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        achievements.isEmpty
-            ? const Card(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Complete practice sessions to earn achievements!',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ),
-        )
-            : SizedBox(
-          height: 120,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: achievements.map((achievement) {
-              return _buildAchievementItem(achievement);
-            }).toList(),
-          ),
-        ),
+        // const Text(
+        //   'Your Achievements',
+        //   style: TextStyle(
+        //     fontSize: 20,
+        //     fontWeight: FontWeight.bold,
+        //   ),
+        // ),
+        // const SizedBox(height: 12),
+        // achievements.isEmpty
+        //     ? const Card(
+        //   child: Padding(
+        //     padding: EdgeInsets.all(16.0),
+        //     child: Text(
+        //       'Complete practice sessions to earn achievements!',
+        //       style: TextStyle(color: Colors.grey),
+        //     ),
+        //   ),
+        // )
+        //     : SizedBox(
+        //   height: 120,
+        //   child: ListView(
+        //     scrollDirection: Axis.horizontal,
+        //     children: achievements.map((achievement) {
+        //       return _buildAchievementItem(achievement);
+        //     }).toList(),
+        //   ),
+        // ),
       ],
     );
   }
