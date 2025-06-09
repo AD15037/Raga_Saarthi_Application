@@ -144,15 +144,15 @@ class _ProgressScreenState extends State<ProgressScreen> {
           const SizedBox(height: 24),
 
           // Achievements
-          const Text(
-            'Achievements',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildAchievements(),
+          // const Text(
+          //   'Achievements',
+          //   style: TextStyle(
+          //     fontSize: 20,
+          //     fontWeight: FontWeight.bold,
+          //   ),
+          // ),
+          // const SizedBox(height: 16),
+          // _buildAchievements(),
         ],
       ),
     );

@@ -115,14 +115,14 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            '${_recommendations!.practiceRoutine.dailyPracticeTime} minutes',
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.deepPurple,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          // Text(
+          //   '${_recommendations!.practiceRoutine.dailyPracticeTime} minutes',
+          //   style: const TextStyle(
+          //     fontSize: 16,
+          //     color: Colors.deepPurple,
+          //     fontWeight: FontWeight.w500,
+          //   ),
+          // ),
           const SizedBox(height: 12),
           _buildPracticeRoutine(),
 

@@ -8,7 +8,7 @@ import 'package:raga_saarthi/screens/record_screen.dart';
 import 'package:raga_saarthi/services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -16,14 +16,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
-  static const List<Widget> _screens = [
-    _HomeContent(),
-    RecordScreen(),
-    RecommendationsScreen(),
-    ProgressScreen(),
-    ProfileScreen(),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -33,8 +25,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screens = [
+      _HomeContent(onQuickActionSelected: _onItemTapped),
+      const RecordScreen(),
+      const RecommendationsScreen(),
+      const ProgressScreen(),
+      const ProfileScreen(),
+    ];
+
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
@@ -42,26 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.deepPurple,
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.mic),
-            label: 'Record',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lightbulb),
-            label: 'Recommendations',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.insights),
-            label: 'Progress',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Record'),
+          BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: 'Recommendations'),
+          BottomNavigationBarItem(icon: Icon(Icons.insights), label: 'Progress'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );
@@ -69,7 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _HomeContent extends StatelessWidget {
-  const _HomeContent();
+  final void Function(int) onQuickActionSelected;
+
+  const _HomeContent({required this.onQuickActionSelected, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -163,58 +150,20 @@ class _HomeContent extends StatelessWidget {
               icon: Icons.mic,
               label: 'Record Performance',
               description: 'Practice a raga and get feedback',
-              onTap: () => _navigateToScreen(context, 1),
+              onTap: () => onQuickActionSelected(1),
             ),
             const SizedBox(height: 12),
             _QuickActionButton(
               icon: Icons.lightbulb,
               label: 'View Recommendations',
               description: 'Get personalized raga suggestions',
-              onTap: () => _navigateToScreen(context, 2),
+              onTap: () => onQuickActionSelected(2),
             ),
             const SizedBox(height: 24),
-
-            // Achievements
-            // const Text(
-            //   'Your Achievements',
-            //   style: TextStyle(
-            //     fontSize: 18,
-            //     fontWeight: FontWeight.bold,
-            //   ),
-            // ),
-            // const SizedBox(height: 12),
-            // user.achievements.isEmpty
-            //     ? const Card(
-            //   child: Padding(
-            //     padding: EdgeInsets.all(16.0),
-            //     child: Text(
-            //       'Complete practice sessions to earn achievements!',
-            //       style: TextStyle(color: Colors.grey),
-            //     ),
-            //   ),
-            // )
-            //     : SizedBox(
-            //   height: 100,
-            //   child: ListView.builder(
-            //     scrollDirection: Axis.horizontal,
-            //     itemCount: user.achievements.length,
-            //     itemBuilder: (context, index) {
-            //       final achievement = user.achievements[index];
-            //       return _AchievementItem(achievement: achievement);
-            //     },
-            //   ),
-            // ),
           ],
         ),
       ),
     );
-  }
-
-  void _navigateToScreen(BuildContext context, int index) {
-    final homeScreen = context.findAncestorWidgetOfExactType<HomeScreen>();
-    if (homeScreen != null) {
-      (homeScreen as dynamic)._onItemTapped(index);
-    }
   }
 }
 
@@ -319,7 +268,6 @@ class _AchievementItem extends StatelessWidget {
     String title;
     IconData iconData;
 
-    // Map achievement IDs to user-friendly names
     switch (achievement) {
       case '7_day_streak':
         title = '7-Day Streak';
