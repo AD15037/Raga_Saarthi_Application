@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:raga_saarthi/models/performance_model.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:raga_saarthi/models/recommendation_model.dart';
 
 class PerformanceResultsScreen extends StatelessWidget {
   final PerformanceResult result;
@@ -125,6 +127,7 @@ class PerformanceResultsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildVocalCharacteristics(),
+            _buildVideoRecommendations(context),
           ],
         ),
       ),
@@ -342,6 +345,121 @@ class PerformanceResultsScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildVideoRecommendations(BuildContext context) {
+    if (result.videoRecommendations == null || result.videoRecommendations!.isEmpty) {
+      return const SizedBox.shrink(); // No recommendations to show
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        const Text(
+          'Video Recommendations',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Skill improvement videos
+        if (result.videoRecommendations!.skillImprovement.isNotEmpty) ...[
+          const Text(
+            'Improve Your Skills',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...result.videoRecommendations!.skillImprovement
+              .map((video) => _buildVideoCard(video, context))
+              .toList(),
+          const SizedBox(height: 16),
+        ],
+
+        // Raga examples
+        if (result.videoRecommendations!.ragaExamples.isNotEmpty) ...[
+          const Text(
+            'Raga Examples',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...result.videoRecommendations!.ragaExamples
+              .map((video) => _buildVideoCard(video, context))
+              .toList(),
+          const SizedBox(height: 16),
+        ],
+
+        // Technique tutorials
+        if (result.videoRecommendations!.techniqueTutorials.isNotEmpty) ...[
+          const Text(
+            'Technique Tutorials',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...result.videoRecommendations!.techniqueTutorials
+              .map((video) => _buildVideoCard(video, context))
+              .toList(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildVideoCard(VideoRecommendation video, BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(12),
+        leading: const CircleAvatar(
+          backgroundColor: Colors.red,
+          child: Icon(Icons.play_arrow, color: Colors.white),
+        ),
+        title: Text(
+          video.title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Text(video.description),
+            if (video.score != null) ...[
+              const SizedBox(height: 4),
+              LinearProgressIndicator(
+                value: video.score! / 100,
+                backgroundColor: Colors.grey.shade200,
+                valueColor: AlwaysStoppedAnimation<Color>(_getScoreColor(video.score!)),
+              ),
+            ],
+          ],
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () => _launchURL(video.url, context),
+      ),
+    );
+  }
+
+  Future<void> _launchURL(String url, BuildContext context) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not launch the video link')),
+      );
+    }
   }
 
   Color _getScoreColor(double score) {

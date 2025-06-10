@@ -8,6 +8,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:raga_saarthi/screens/performance_results_screen.dart';
 import 'package:raga_saarthi/services/performance_service.dart';
 
+import '../models/performance_model.dart';
+
 class RecordScreen extends StatefulWidget {
   const RecordScreen({Key? key}) : super(key: key);
 
@@ -216,11 +218,14 @@ class _RecordScreenState extends State<RecordScreen> {
       setState(() => _isAnalyzing = false);
 
       if (result['success']) {
-        // Navigate to results screen
-        Navigator.of(context).push(
+        final performanceResult = result['result'] as PerformanceResult;
+
+        // Navigate to results screen with the performance result
+        Navigator.push(
+          context,
           MaterialPageRoute(
-            builder: (_) => PerformanceResultsScreen(
-              result: result['result'],
+            builder: (context) => PerformanceResultsScreen(
+              result: performanceResult,
               raga: _selectedRaga,
             ),
           ),
@@ -446,4 +451,61 @@ class _RecordScreenState extends State<RecordScreen> {
       ),
     );
   }
+}
+
+class VideoRecommendation {
+  final String title;
+  final String url;
+  final String thumbnail;
+
+  VideoRecommendation({
+    required this.title,
+    required this.url,
+    required this.thumbnail,
+  });
+
+  factory VideoRecommendation.fromJson(Map<String, dynamic> json) {
+    return VideoRecommendation(
+      title: json['title'] as String,
+      url: json['url'] as String,
+      thumbnail: json['thumbnail'] as String,
+    );
+  }
+}
+
+class VideoRecommendations {
+  final List<VideoRecommendation> skillImprovement;
+  final List<VideoRecommendation> ragaExamples;
+  final List<VideoRecommendation> techniqueTutorials;
+
+  VideoRecommendations({
+    required this.skillImprovement,
+    required this.ragaExamples,
+    required this.techniqueTutorials,
+  });
+
+  factory VideoRecommendations.fromJson(Map<String, dynamic> json) {
+    final skillImprovement = (json['skill_improvement'] as List<dynamic>? ?? [])
+        .map((item) => VideoRecommendation.fromJson(item))
+        .toList();
+        
+    final ragaExamples = (json['raga_examples'] as List<dynamic>? ?? [])
+        .map((item) => VideoRecommendation.fromJson(item))
+        .toList();
+        
+    final techniqueTutorials = (json['technique_tutorials'] as List<dynamic>? ?? [])
+        .map((item) => VideoRecommendation.fromJson(item))
+        .toList();
+
+    return VideoRecommendations(
+      skillImprovement: skillImprovement,
+      ragaExamples: ragaExamples,
+      techniqueTutorials: techniqueTutorials,
+    );
+  }
+  
+  bool get isEmpty => 
+      skillImprovement.isEmpty && 
+      ragaExamples.isEmpty && 
+      techniqueTutorials.isEmpty;
 }

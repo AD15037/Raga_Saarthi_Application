@@ -84,3 +84,63 @@ class RecommendationsResponse {
     );
   }
 }
+
+class VideoRecommendation {
+  final String title;
+  final String url;
+  final String description;
+  final double? score;
+
+  VideoRecommendation({
+    required this.title,
+    required this.url,
+    required this.description,
+    this.score,
+  });
+
+  factory VideoRecommendation.fromJson(Map<String, dynamic> json) {
+    return VideoRecommendation(
+      title: json['title'] ?? '',
+      url: json['url'] ?? '',
+      description: json['description'] ?? '',
+      score: json['score']?.toDouble(),
+    );
+  }
+}
+
+class VideoRecommendations {
+  final List<VideoRecommendation> skillImprovement;
+  final List<VideoRecommendation> ragaExamples;
+  final List<VideoRecommendation> techniqueTutorials;
+
+  VideoRecommendations({
+    required this.skillImprovement,
+    required this.ragaExamples,
+    required this.techniqueTutorials,
+  });
+
+  factory VideoRecommendations.fromJson(Map<String, dynamic> json) {
+    final skillImprovement = (json['skill_improvement'] as List<dynamic>? ?? [])
+        .map((item) => VideoRecommendation.fromJson(item))
+        .toList();
+        
+    final ragaExamples = (json['raga_examples'] as List<dynamic>? ?? [])
+        .map((item) => VideoRecommendation.fromJson(item))
+        .toList();
+        
+    final techniqueTutorials = (json['technique_tutorials'] as List<dynamic>? ?? [])
+        .map((item) => VideoRecommendation.fromJson(item))
+        .toList();
+
+    return VideoRecommendations(
+      skillImprovement: skillImprovement,
+      ragaExamples: ragaExamples,
+      techniqueTutorials: techniqueTutorials,
+    );
+  }
+  
+  bool get isEmpty => 
+      skillImprovement.isEmpty && 
+      ragaExamples.isEmpty && 
+      techniqueTutorials.isEmpty;
+}
