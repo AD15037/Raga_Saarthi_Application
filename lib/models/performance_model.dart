@@ -9,7 +9,8 @@ class PerformanceResult {
   final Map<String, dynamic> detectedPatterns;
   final List<Map<String, String>> feedback;
   VideoRecommendations? videoRecommendations;
-  final Map<String, dynamic> vocalCharacteristics; // Added this field
+  final Map<String, dynamic> vocalCharacteristics;
+  final Map<String, dynamic>? analysis; // Add analysis field
 
   PerformanceResult({
     required this.overallScore,
@@ -20,7 +21,8 @@ class PerformanceResult {
     required this.feedback,
     this.pronunciationScore,
     this.videoRecommendations,
-    required this.vocalCharacteristics, // Added parameter
+    required this.vocalCharacteristics,
+    this.analysis, // Add to constructor
   });
 
   factory PerformanceResult.fromJson(Map<String, dynamic> json) {
@@ -60,6 +62,7 @@ class PerformanceResult {
       feedback: feedback,
       videoRecommendations: videoRecommendations,
       vocalCharacteristics: json['vocal_characteristics'] ?? {},
+      analysis: json['analysis'], // Add analysis data
     );
   }
 }
