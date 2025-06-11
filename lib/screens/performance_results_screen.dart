@@ -265,21 +265,57 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Vocal range
-            const Text(
-              'Vocal Range',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                const Text(
+                  'Vocal Range',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.info_outline, size: 18),
+                  onPressed: () => _showNotationGuide(context),
+                  tooltip: 'Notation Guide',
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                _characteristicItem('Min', vocalRange['min_note'] ?? '-'),
-                _characteristicItem('Max', vocalRange['max_note'] ?? '-'),
-                _characteristicItem('Avg', vocalRange['mean_note'] ?? '-'),
+                _characteristicItemWithTooltip(
+                  'Min', 
+                  vocalRange['min_note'] ?? '-', 
+                  'Lowest note in your vocal range\n\nThe symbol ",S" means S in the lower octave'
+                ),
+                _characteristicItemWithTooltip(
+                  'Max', 
+                  vocalRange['max_note'] ?? '-',
+                  'Highest note in your vocal range\n\nThe symbol "S\'" means S in the upper octave'
+                ),
+                _characteristicItemWithTooltip(
+                  'Avg', 
+                  vocalRange['mean_note'] ?? '-',
+                  'Average note in your vocal range\n\nPlain symbols like "D" indicate middle octave'
+                ),
               ],
             ),
+            
+            // Notation hint text
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                'Note: Symbols show Indian classical notation (S, R, G, M, P, D, N). Tap "i" for details.',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+            
             const Divider(),
 
             // Timbre
@@ -379,6 +415,40 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _characteristicItemWithTooltip(String label, String value, String tooltip) {
+    return Expanded(
+      child: Tooltip(
+        message: tooltip,
+        padding: const EdgeInsets.all(8),
+        preferBelow: true,
+        showDuration: const Duration(seconds: 5),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -726,5 +796,95 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
     };
     
     return descriptions[title] ?? 'Visualization of audio characteristics.';
+  }
+
+  // Add this method to show a detailed notation guide
+  void _showNotationGuide(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Indian Classical Music Notation Guide'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildNotationSection('Basic Notes (Swaras)', [
+                _buildNotationRow('S', 'Shadja (Sa)'),
+                _buildNotationRow('R', 'Shuddha Rishabh (Re)'),
+                _buildNotationRow('r', 'Komal Rishabh (Re flat)'),
+                _buildNotationRow('G', 'Shuddha Gandhar (Ga)'),
+                _buildNotationRow('g', 'Komal Gandhar (Ga flat)'),
+                _buildNotationRow('M', 'Shuddha Madhyam (Ma)'),
+                _buildNotationRow('m', 'Tivra Madhyam (Ma sharp)'),
+                _buildNotationRow('P', 'Pancham (Pa)'),
+                _buildNotationRow('D', 'Shuddha Dhaivat (Dha)'),
+                _buildNotationRow('d', 'Komal Dhaivat (Dha flat)'),
+                _buildNotationRow('N', 'Shuddha Nishad (Ni)'),
+                _buildNotationRow('n', 'Komal Nishad (Ni flat)'),
+              ]),
+              const SizedBox(height: 16),
+              _buildNotationSection('Octave Indicators', [
+                _buildNotationRow(',S', 'Lower octave (e.g., ,S is Sa in lower octave)'),
+                _buildNotationRow('S', 'Middle octave (default, no special symbol)'),
+                _buildNotationRow('S\'', 'Upper octave (e.g., S\' is Sa in upper octave)'),
+              ]),
+              const SizedBox(height: 16),
+              Text(
+                'Your vocal range is shown using these notations, indicating the lowest, highest, and average notes you performed.',
+                style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNotationSection(String title, List<Widget> rows) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...rows,
+      ],
+    );
+  }
+
+  Widget _buildNotationRow(String symbol, String description) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            child: Text(
+              symbol,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(description),
+          ),
+        ],
+      ),
+    );
   }
 }
