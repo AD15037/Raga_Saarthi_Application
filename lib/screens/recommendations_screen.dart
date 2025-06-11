@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:raga_saarthi/models/recommendation_model.dart';
 import 'package:raga_saarthi/services/progress_service.dart';
+import 'package:raga_saarthi/screens/record_screen.dart';
 
 class RecommendationsScreen extends StatefulWidget {
   const RecommendationsScreen({Key? key}) : super(key: key);
@@ -206,16 +207,15 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        // Future implementation: navigate to raga details
-                      },
-                      child: const Text('Learn More'),
-                    ),
-                    const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
-                        // Future implementation: navigate to practice screen
+                        // Navigate to record screen with the selected raga
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RecordScreen(initialRaga: rec.raga),
+                          ),
+                        );
                       },
                       child: const Text('Practice'),
                     ),

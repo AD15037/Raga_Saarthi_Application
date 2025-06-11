@@ -11,7 +11,9 @@ import 'package:raga_saarthi/services/performance_service.dart';
 import '../models/performance_model.dart';
 
 class RecordScreen extends StatefulWidget {
-  const RecordScreen({Key? key}) : super(key: key);
+  final String? initialRaga;
+  
+  const RecordScreen({Key? key, this.initialRaga}) : super(key: key);
 
   @override
   _RecordScreenState createState() => _RecordScreenState();
@@ -51,6 +53,14 @@ class _RecordScreenState extends State<RecordScreen> {
     _audioRecorder.dispose();
     _audioPlayer.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialRaga != null) {
+      _selectedRaga = widget.initialRaga!;
+    }
   }
 
   Future<void> _requestPermissions() async {
