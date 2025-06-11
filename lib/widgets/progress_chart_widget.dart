@@ -64,6 +64,26 @@ class _ProgressChartWidgetState extends State<ProgressChartWidget> {
         ),
         const SizedBox(height: 12),
 
+        // Adding a legend for better understanding
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Icon(Icons.touch_app, size: 16, color: Colors.grey[600]),
+              const SizedBox(width: 4),
+              Text(
+                'Tap on points to see score details',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+
         // Chart
         Expanded(
           child: LineChart(
@@ -75,7 +95,7 @@ class _ProgressChartWidgetState extends State<ProgressChartWidget> {
   }
 
   LineChartData _mainData() {
-    // Sort history by date
+    // Sort history by date (ensuring chronological order)
     final sortedHistory = List<PerformanceHistoryEntry>.from(widget.history)
       ..sort((a, b) => a.date.compareTo(b.date));
 
@@ -133,7 +153,7 @@ class _ProgressChartWidgetState extends State<ProgressChartWidget> {
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 30,
-            interval: 1,
+            interval: _calculateXAxisInterval(sortedHistory.length),
             getTitlesWidget: (value, meta) {
               final int index = value.toInt();
               if (index >= 0 && index < sortedHistory.length) {
@@ -180,6 +200,34 @@ class _ProgressChartWidgetState extends State<ProgressChartWidget> {
       maxX: sortedHistory.length - 1.0,
       minY: 0,
       maxY: 100,
+      lineTouchData: LineTouchData(
+        touchTooltipData: LineTouchTooltipData(
+          getTooltipColor: (touchedSpot) { // ADD THIS
+            return Colors.deepPurple.withOpacity(0.8);
+          },
+          getTooltipItems: (touchedSpots) {
+            return touchedSpots.map((touchedSpot) {
+              final index = touchedSpot.x.toInt();
+              if (index >= 0 && index < sortedHistory.length) {
+                final entry = sortedHistory[index];
+                final date = DateFormat('MMM d, yyyy').format(entry.date);
+                return LineTooltipItem(
+                  '${touchedSpot.y.toStringAsFixed(1)}%\n$date',
+                  const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }
+              return null;
+            }).toList();
+          },
+        ),
+        touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
+          // Optional: Implement any additional touch handling here
+        },
+        handleBuiltInTouches: true,
+      ),
       lineBarsData: [
         LineChartBarData(
           spots: spots,
@@ -192,8 +240,9 @@ class _ProgressChartWidgetState extends State<ProgressChartWidget> {
           dotData: FlDotData(
             show: true,
             getDotPainter: (spot, percent, barData, index) {
+              // Show score value next to the dot
               return FlDotCirclePainter(
-                radius: 4,
+                radius: 5,
                 color: Colors.deepPurple,
                 strokeWidth: 2,
                 strokeColor: Colors.white,
@@ -211,5 +260,17 @@ class _ProgressChartWidgetState extends State<ProgressChartWidget> {
         ),
       ],
     );
+  }
+
+  double _calculateXAxisInterval(int dataLength) {
+    // Show fewer labels when there are more data points
+    if (dataLength > 15) {
+      return (dataLength / 4).floorToDouble(); // Show only ~4 labels for many data points
+    } else if (dataLength > 10) {
+      return (dataLength / 5).floorToDouble(); // Show ~5 labels
+    } else if (dataLength > 5) {
+      return 2; // Show every other label when 6-10 data points
+    }
+    return 1; // Show all labels when 5 or fewer data points
   }
 }

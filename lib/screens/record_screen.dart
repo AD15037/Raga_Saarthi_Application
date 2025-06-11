@@ -226,7 +226,7 @@ class _RecordScreenState extends State<RecordScreen> {
           MaterialPageRoute(
             builder: (context) => PerformanceResultsScreen(
               result: performanceResult,
-              raga: _selectedRaga,
+              raga: performanceResult.predictedRaga, // Use the predicted raga from the model
             ),
           ),
         );
@@ -437,13 +437,39 @@ class _RecordScreenState extends State<RecordScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white, // Force white text regardless of state
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                onPressed: _isAnalyzing || _isRecording || _audioPath == null
-                    ? null
-                    : _analyzePerformance,
+                onPressed: _isAnalyzing ? null : _analyzePerformance,
                 child: _isAnalyzing
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Analyze Performance'),
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white, // Force white color for the spinner
+                              strokeWidth: 2,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            'Analyzing...',
+                            style: TextStyle(
+                              color: Colors.white, // Force white text during analysis
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      )
+                    : const Text(
+                        'Analyze Performance',
+                        style: TextStyle(
+                          color: Colors.white, // Force white text always
+                          fontSize: 16,
+                        ),
+                      ),
               ),
             ),
           ],

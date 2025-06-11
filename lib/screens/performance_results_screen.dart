@@ -72,7 +72,7 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Raga: ${widget.raga}',
+                      'Raga: ${widget.result.predictedRaga}', // This is already using the predicted raga
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white,
@@ -83,6 +83,12 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
               ),
             ),
             const SizedBox(height: 24),
+
+            // Add CNN prediction section here
+            if (widget.result.cnnPrediction != null) ...[
+              _buildRagaPredictionSection(),
+              const SizedBox(height: 24),
+            ],
 
             // Audio visualization section (new)
             if (widget.result.analysis != null && 
@@ -97,6 +103,51 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
               const SizedBox(height: 12),
               _buildAudioVisualization(),
               const SizedBox(height: 24),
+            ],
+
+            // Information about score basis
+            if (widget.result.scoreBasis != null && 
+                widget.result.scoreBasis!.basedOn == "predicted_raga") ...[
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.info_outline, color: Colors.blue),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'Detailed scores are based on the Deep Learning-detected raga ',
+                              style: TextStyle(fontWeight: FontWeight.normal),
+                            ),
+                            TextSpan(
+                              text: widget.result.scoreBasis!.predictedRaga,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const TextSpan(
+                              text: ' rather than your selected raga ',
+                              style: TextStyle(fontWeight: FontWeight.normal),
+                            ),
+                            TextSpan(
+                              text: widget.result.scoreBasis!.selectedRaga,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
 
             // Detailed scores
@@ -123,11 +174,11 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
               widget.result.structureAdherence['pakad'] ?? 0,
               Icons.repeat,
             ),
-            _buildScoreCard(
-              'Vadi-Samvadi Accuracy',
-              widget.result.vadiSamvadiAccuracy,
-              Icons.music_note,
-            ),
+            // _buildScoreCard(
+            //   'Vadi-Samvadi Accuracy',
+            //   widget.result.vadiSamvadiAccuracy,
+            //   Icons.music_note,
+            // ),
             _buildScoreCard(
               'Rhythm Stability',
               widget.result.rhythmStability,
@@ -886,5 +937,173 @@ class _PerformanceResultsScreenState extends State<PerformanceResultsScreen> {
         ],
       ),
     );
+  }
+
+  // Add this method to the _PerformanceResultsScreenState class
+  Widget _buildRagaPredictionSection() {
+    if (widget.result.cnnPrediction == null) {
+      return const SizedBox.shrink();
+    }
+
+    final cnnPrediction = widget.result.cnnPrediction!;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Raga Identification',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Deep Learning Identified Raga:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          cnnPrediction.predictedRagas.isNotEmpty
+                              ? cnnPrediction.predictedRagas[0].name
+                              : 'Unknown',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'Confidence:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          cnnPrediction.predictedRagas.isNotEmpty
+                              ? '${cnnPrediction.predictedRagas[0].confidence.toStringAsFixed(1)}%'
+                              : '0%',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: _getConfidenceColor(cnnPrediction.predictedRagas.isNotEmpty
+                                ? cnnPrediction.predictedRagas[0].confidence
+                                : 0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                if (cnnPrediction.predictedRagas.length > 1) ...[
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Alternative Possibilities:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...cnnPrediction.predictedRagas.skip(1).map((raga) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(raga.name),
+                        Text(
+                          '${raga.confidence.toStringAsFixed(1)}%',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: _getConfidenceColor(raga.confidence),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                ],
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Selected Raga Match:',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      '${cnnPrediction.matchConfidence.toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: _getConfidenceColor(cnnPrediction.matchConfidence),
+                      ),
+                    ),
+                  ],
+                ),
+                if (cnnPrediction.matchConfidence < 50) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.amber[800], size: 16),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'The selected raga doesn\'t closely match what the Deep Learning detected. You might be performing a different raga or need to work on the characteristic features of this raga.',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getConfidenceColor(double confidence) {
+    if (confidence >= 80) {
+      return Colors.green;
+    } else if (confidence >= 50) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
   }
 }

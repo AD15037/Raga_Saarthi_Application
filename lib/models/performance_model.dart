@@ -1,5 +1,64 @@
 import 'package:raga_saarthi/models/recommendation_model.dart';
 
+class RagaPrediction {
+  final String name;
+  final double confidence;
+
+  RagaPrediction({required this.name, required this.confidence});
+
+  factory RagaPrediction.fromJson(Map<String, dynamic> json) {
+    return RagaPrediction(
+      name: json['name'] ?? '',
+      confidence: (json['confidence'] ?? 0.0).toDouble(),
+    );
+  }
+}
+
+class CNNPrediction {
+  final List<RagaPrediction> predictedRagas;
+  final String selectedRaga;
+  final double matchConfidence;
+
+  CNNPrediction({
+    required this.predictedRagas,
+    required this.selectedRaga,
+    required this.matchConfidence,
+  });
+
+  factory CNNPrediction.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> predictionsList = json['predicted_ragas'] ?? [];
+    final predictedRagas = predictionsList
+        .map((item) => RagaPrediction.fromJson(item))
+        .toList();
+
+    return CNNPrediction(
+      predictedRagas: predictedRagas,
+      selectedRaga: json['selected_raga'] ?? '',
+      matchConfidence: (json['match_confidence'] ?? 0.0).toDouble(),
+    );
+  }
+}
+
+class ScoreBasis {
+  final String basedOn;
+  final String selectedRaga;
+  final String? predictedRaga;
+
+  ScoreBasis({
+    required this.basedOn,
+    required this.selectedRaga,
+    this.predictedRaga,
+  });
+
+  factory ScoreBasis.fromJson(Map<String, dynamic> json) {
+    return ScoreBasis(
+      basedOn: json['based_on'] ?? 'selected_raga',
+      selectedRaga: json['selected_raga'] ?? '',
+      predictedRaga: json['predicted_raga'],
+    );
+  }
+}
+
 class PerformanceResult {
   final double overallScore;
   final Map<String, double> structureAdherence;
@@ -10,7 +69,10 @@ class PerformanceResult {
   final List<Map<String, String>> feedback;
   VideoRecommendations? videoRecommendations;
   final Map<String, dynamic> vocalCharacteristics;
-  final Map<String, dynamic>? analysis; // Add analysis field
+  final Map<String, dynamic>? analysis;
+  final CNNPrediction? cnnPrediction; // Add CNN prediction
+  final String predictedRaga; // Store the predicted raga name
+  final ScoreBasis? scoreBasis;
 
   PerformanceResult({
     required this.overallScore,
@@ -22,7 +84,10 @@ class PerformanceResult {
     this.pronunciationScore,
     this.videoRecommendations,
     required this.vocalCharacteristics,
-    this.analysis, // Add to constructor
+    this.analysis,
+    this.cnnPrediction,
+    required this.predictedRaga,
+    this.scoreBasis,
   });
 
   factory PerformanceResult.fromJson(Map<String, dynamic> json) {
@@ -52,6 +117,21 @@ class PerformanceResult {
       videoRecommendations = VideoRecommendations.fromJson(json['video_recommendations']);
     }
 
+    // Parse CNN prediction
+    CNNPrediction? cnnPrediction;
+    if (json['cnn_prediction'] != null) {
+      cnnPrediction = CNNPrediction.fromJson(json['cnn_prediction']);
+    }
+
+    // Parse score basis
+    ScoreBasis? scoreBasis;
+    if (json['score_basis'] != null) {
+      scoreBasis = ScoreBasis.fromJson(json['score_basis']);
+    }
+
+    // Get predicted raga or default to selected raga
+    String predictedRaga = json['predicted_raga'] ?? json['raga'] ?? '';
+
     return PerformanceResult(
       overallScore: (json['overall_score'] ?? 0.0).toDouble(),
       structureAdherence: structureAdherence,
@@ -62,7 +142,10 @@ class PerformanceResult {
       feedback: feedback,
       videoRecommendations: videoRecommendations,
       vocalCharacteristics: json['vocal_characteristics'] ?? {},
-      analysis: json['analysis'], // Add analysis data
+      analysis: json['analysis'],
+      cnnPrediction: cnnPrediction,
+      predictedRaga: predictedRaga,
+      scoreBasis: scoreBasis,
     );
   }
 }

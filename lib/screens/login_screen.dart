@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:raga_saarthi/screens/home_screen.dart';
 import 'package:raga_saarthi/services/auth_service.dart';
+import 'package:raga_saarthi/widgets/app_logo.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -75,24 +76,16 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // App logo or icon
-              const Icon(
-                Icons.music_note,
-                size: 80,
-                color: Colors.deepPurple,
-              ),
-              const SizedBox(height: 16),
-
-              // App name
-              const Text(
-                'Raag Saarthi',
-                textAlign: TextAlign.center,
-                style: TextStyle(
+              const AppLogo(
+                height: 80,
+                spacing: 16,
+                textStyle: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.deepPurple,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
 
               // App tagline
               const Text(

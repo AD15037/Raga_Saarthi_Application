@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:raga_saarthi/screens/login_screen.dart';
 import 'package:raga_saarthi/services/auth_service.dart';
+import 'package:raga_saarthi/widgets/app_logo.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -24,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Profile'),
+        title: const Text('Profile'), // Use text title instead of AppLogo
         actions: [
           TextButton.icon(
             icon: const Icon(Icons.logout, color: Colors.white),

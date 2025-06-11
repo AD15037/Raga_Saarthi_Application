@@ -6,6 +6,7 @@ import 'package:raga_saarthi/screens/progress_screen.dart';
 import 'package:raga_saarthi/screens/recommendations_screen.dart';
 import 'package:raga_saarthi/screens/record_screen.dart';
 import 'package:raga_saarthi/services/auth_service.dart';
+import 'package:raga_saarthi/widgets/app_logo.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -34,6 +35,23 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
+      appBar: AppBar(
+        title: const AppLogo(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              final authService = Provider.of<AuthService>(context, listen: false);
+              final result = await authService.logout();
+              if (result) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              }
+            },
+          ),
+        ],
+      ),
       body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -64,22 +82,6 @@ class _HomeContent extends StatelessWidget {
     final user = authService.currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Raag Saarthi'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final result = await authService.logout();
-              if (result) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                );
-              }
-            },
-          ),
-        ],
-      ),
       body: user == null
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

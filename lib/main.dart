@@ -24,6 +24,27 @@ class RaagSaarthiApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'Roboto',
+        // For Material 3 theme:
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return Colors.grey.shade300; // Disabled background
+                }
+                return Colors.deepPurple; // Default background
+              },
+            ),
+            foregroundColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.disabled)) {
+                  return Colors.black54; // Disabled text
+                }
+                return Colors.white; // Default text
+              },
+            ),
+          ),
+        ),
       ),
       home: Consumer<AuthService>(
         builder: (context, authService, child) {

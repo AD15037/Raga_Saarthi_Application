@@ -49,6 +49,7 @@ class PerformanceService {
           ...responseData['performance'],
           'analysis': responseData['analysis'], // Add analysis data
           'vocal_characteristics': responseData['vocal_characteristics'],
+          'score_basis': responseData['performance']['score_basis'], // Add this line
         });
 
         // Add video recommendations to the performance result
