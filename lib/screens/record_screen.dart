@@ -29,7 +29,7 @@ class _RecordScreenState extends State<RecordScreen> {
   String? _audioPath;
   bool _isUploadedFile = false;
 
-  String _selectedRaga = 'Yaman';
+  String _selectedRaga = 'Abhogi Kanada'; // Default raga
   bool _isAnalyzing = false;
 
   final List<String> _ragas = [
@@ -320,11 +320,13 @@ class _RecordScreenState extends State<RecordScreen> {
                       backgroundColor: !_isUploadedFile ? Colors.deepPurple : null,
                       foregroundColor: !_isUploadedFile ? Colors.white : null,
                     ),
-                    onPressed: _isRecording ? null : () {
+                    onPressed: _isRecording ? null : () async {
                       setState(() {
                         _isUploadedFile = false;
                         _audioPath = null;
                       });
+                      // Start recording immediately when this button is pressed
+                      await _startRecording();
                     },
                   ),
                 ),
