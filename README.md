@@ -2,6 +2,9 @@
 
 A new Flutter project.
 
-## Demo
+## Demo Video
 
-<iframe width="560" height="315" src="[www.youtube.com](https://youtu.be/XywWQ4YcaX4)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Video Thumbnail](assets/Icon.jpeg)](https://youtu.be/XywWQ4YcaX4 "Click to watch the demo video")
+
+**[Watch the demo on YouTube](https://youtu.be/XywWQ4YcaX4)**
+
